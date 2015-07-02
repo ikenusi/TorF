@@ -1,0 +1,21 @@
+﻿name: TorF
+main: TorF\TorF
+version: 0.0.1
+api: [1.10.0]
+load: POSTWORLD
+author: ikenusi
+authors: [ikenusi]
+description: 投票するプラグイン
+website:
+commands:
+ tf:
+  description: 人のban投票ができます。
+  usage: "/tf <start:true:false:fin>"
+permissions:
+ tf:
+  default: true
+  description: "Allows using all the TorF things"
+  children:
+   tf.command:
+   default: true
+   description: "Allows using all the TotF commands"
