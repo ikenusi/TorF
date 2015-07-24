@@ -1,12 +1,12 @@
 ﻿name: TorF
 main: TorF\TorF
 version: 0.0.1
-api: [1.10.0]
+api: [1.11.0]
 load: POSTWORLD
 author: ikenusi
 authors: [ikenusi]
 description: 投票するプラグイン
-website:
+website:https://twitter.com/ikenusi
 commands:
  tf:
   description: 人のban投票ができます。

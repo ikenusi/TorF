@@ -16,14 +16,8 @@ class TorF extends PluginBase implements Listener{
 
 	public function onEnable(){
 		if(!file_exists($this->getDataFolder())) @mkdir($this->getDataFolder(), 0755, true);
-		$this->log = new Config($this->getDataFolder() . "log.yml", Config::YAML);
-		$this->log->save();
 		$this->getServer()->getPluginManager()->registerEvents($this,$this);
 		$this->users = [];
-	}
-
-	public function onDisable(){
-		$this->log->save();
 	}
 
 	public function onCommand(CommandSender $sender, Command $command, $label, array $args){
@@ -93,12 +87,13 @@ class TorF extends PluginBase implements Listener{
 					if(!isset($this->start)){
 						$sender->sendMessage("§c[TF] ただいま投票作業はありません。");
 					}elseif($sender->isOp()){
+						$now = \time();
 						$sender->getServer()->broadcastMessage("§c[TF] 投票は権限者の判断により中止されました。");
 						if(isset($args[1])){
-							$this->log->set($this->votePname, array("結果" => "中断", "中断理由" => $args[1]));
+							$this->file($this->votePname. "のbanは「".$args[1]."」が理由で権限者による中断で終了");
 							$sender->getServer()->broadcastMessage("§c[TF] §a中断理由「§b".$args[1]."§a」");
 						}else{
-							$this->log->set($this->votePname, array("結果" => "中断"));
+							$this->file($this->votePname. "のbanは権限者による中断で終了");
 							unset($this->votePname, $this->true, $this->false, $this->start, $this->reason);
 						}
 						$sender->getServer()->broadcastMessage("§c[TF] しばらく投票作業ができません。");
@@ -136,13 +131,20 @@ class TorF extends PluginBase implements Listener{
 		if($this->true > $this->false){
 			$this->getServer()->broadcastMessage("§c[TF] §aよって、ban投票が§b可決§aされました！");
 			$this->getServer()->dispatchCommand(new ConsoleCommandSender, "ban ".$this->votePname);
-			$this->log->set($this->votePname, array("ban理由" => $this->reason, "結果" => "可決"));
+			$this->file($this->votePname. "のban理由は".$this->reason."でban可決");
 		}else{
 			$this->getServer()->broadcastMessage("§c[TF] §aよって、ban投票が§c否決§aされました！");
-			$this->log->set($this->votePname, array("ban理由" => $this->reason, "結果" => "否決"));
+			$this->file($this->votePname. "のban理由は".$this->reason."でban否決");
 		}
 		$this->getServer()->broadcastMessage("§c[TF] §b投票お疲れ様でした。");
 		unset($this->true, $this->false, $this->votePname, $this->reason);
+	}
+
+	//ファイルに出力
+	public function file($message){
+		$fp = fopen($this->getDataFolder() . "log.yml", 'ab');
+		fwrite($fp,  "[".\date("H:i:s", $now)."]".$message);
+		fclose($fp);
 	}
 
 
