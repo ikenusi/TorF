@@ -25,13 +25,13 @@ class TorF extends PluginBase implements Listener{
 			if(!isset($args[0])) return false;
 			switch($args[0]){
 				case "start":  ///投票開始コマンド処理
-					if(!isset($args[1])){
+					if(!isset($args[1])){//banする人の名前がなかったら
 						$sender->sendMessage("§c[TF] banする人の名前を入力してください。");
-					}elseif(!isset($args[2])){
+					}elseif(!isset($args[2])){//理由がなかったら
 						$sender->sendMessage("§c[TF] 理由も入力してください。");
-					}elseif(isset($start)){
+					}elseif(isset($start)){//作業中だったら
 						$sender->sendMessage("§c[TF] ただいま投票作業中です。");
-					}elseif(isset($this->fin)){
+					}elseif(isset($this->fin)){//
 						$sender->sendMessage("§c[TF] クールダウン中です、しばらくお待ち下さい。");
 					}else{
 						$this->votePname = $args[1];
@@ -45,8 +45,7 @@ class TorF extends PluginBase implements Listener{
 						$this->false = 0;
 						$this->start = 1;
 						$this->true = 1;
-						$this->getServer()->getScheduler()->scheduleDelayedTask(new FINISH($this), 1200*3);
-						$this->fin = 1;
+						$this->id = $this->getServer()->getScheduler()->scheduleDelayedTask(new FINISH($this), 1200*3);
 					}
 					return true;
 				case "true": ///ban賛成コマンド処理
@@ -87,16 +86,15 @@ class TorF extends PluginBase implements Listener{
 					if(!isset($this->start)){
 						$sender->sendMessage("§c[TF] ただいま投票作業はありません。");
 					}elseif($sender->isOp()){
-						$now = \time();
 						$sender->getServer()->broadcastMessage("§c[TF] 投票は権限者の判断により中止されました。");
 						if(isset($args[1])){
 							$this->file($this->votePname. "のbanは「".$args[1]."」が理由で権限者による中断で終了");
 							$sender->getServer()->broadcastMessage("§c[TF] §a中断理由「§b".$args[1]."§a」");
 						}else{
 							$this->file($this->votePname. "のbanは権限者による中断で終了");
-							unset($this->votePname, $this->true, $this->false, $this->start, $this->reason);
 						}
-						$sender->getServer()->broadcastMessage("§c[TF] しばらく投票作業ができません。");
+						$this->getServer()->getScheduler()->CancelTask($this->id);
+						unset($this->votePname, $this->true, $this->false, $this->start, $this->reason, $this->id);
 					}else{
 						$sender->sendMessage("§c[TF] あなたはオペレータ権限を持っていません！");
 					}
@@ -121,10 +119,6 @@ class TorF extends PluginBase implements Listener{
 
 	//投票が終わりました
 	public function fini(){
-		if(!isset($this->start)){
-			unset($this->fin);
-			return false;
-		}
 		unset($this->start);
 		$this->getServer()->broadcastMessage("§c[TF] §a3分経過ので結果を発表します。");
 		$this->getServer()->broadcastMessage("§c[TF] §b".$this->true."§a対§c".$this->false."§aです。");
@@ -142,7 +136,8 @@ class TorF extends PluginBase implements Listener{
 
 	//ファイルに出力
 	public function file($message){
-		$fp = fopen($this->getDataFolder() . "log.yml", 'ab');
+		$now = \time();
+		$fp = fopen($this->getDataFolder() . "log.txt", 'ab');
 		fwrite($fp,  "[".\date("H:i:s", $now)."]".$message);
 		fclose($fp);
 	}
