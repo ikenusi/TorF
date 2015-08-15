@@ -91,7 +91,7 @@ class TorF extends PluginBase implements Listener{
 							$this->file($this->votePname. "のbanは権限者による中断で終了");
 						}
 						$this->getServer()->getScheduler()->cancelTask($this->id);
-						unset($this->votePname, $this->true, $this->false, $this->start, $this->reason, $this->id);
+						unset($this->votePname, $this->true, $this->false, $this->start, $this->reason, $this->id, $this->users);
 					}else{
 						$sender->sendMessage("§c[TF] あなたはオペレータ権限を持っていません！");
 					}
@@ -128,7 +128,7 @@ class TorF extends PluginBase implements Listener{
 			$this->file($this->votePname. "のban理由は".$this->reason."でban否決");
 		}
 		$this->getServer()->broadcastMessage("§c[TF] §b投票お疲れ様でした。");
-		unset($this->true, $this->false, $this->votePname, $this->reason);
+		unset($this->true, $this->false, $this->votePname, $this->reason, $this->id, $this->users);
 	}
 
 	//ファイルに出力
