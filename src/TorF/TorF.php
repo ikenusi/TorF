@@ -29,7 +29,7 @@ class TorF extends PluginBase implements Listener{
 						$sender->sendMessage("§c[TF] banする人の名前を入力してください。");
 					}elseif(!isset($args[2])){//理由がなかったら
 						$sender->sendMessage("§c[TF] 理由も入力してください。");
-					}elseif(isset($start)){//作業中だったら
+					}elseif(isset($this->start)){//作業中だったら
 						$sender->sendMessage("§c[TF] ただいま投票作業中です。");
 					}else{
 						$this->votePname = $args[1];//banされる人の名前
@@ -55,6 +55,7 @@ class TorF extends PluginBase implements Listener{
 						$sender->sendMessage("§c[TF] あなたはbanされる側です。");
 					}else{
 						$sender->getServer()->broadcastMessage("§c[TF] §b".$sender->getName()."さんが投票しました！");
+						$sender->getServer()->getLogger()->info("§c[TF] §b".$sender->getName()."は賛成です。");
 						$this->users[$sender->getName()] = 1;//投票済み
 						$this->true++;//賛成数増加
 					}
@@ -66,6 +67,7 @@ class TorF extends PluginBase implements Listener{
 						$sender->sendMessage("§c[TF] あなたは投票済みです。");
 					}else{
 						$sender->getServer()->broadcastMessage("§c[TF] §b".$sender->getName()."さんが投票しました！");
+						$sender->getServer()->getLogger()->info("§c[TF] §b".$sender->getName()."は反対です。");
 						$this->users[$sender->getName()] = 1;//投票済み
 						$this->false++;//反対数増加
 					}
@@ -77,6 +79,7 @@ class TorF extends PluginBase implements Listener{
 						$sender->sendMessage("§a[TF] §b名前:".$this->votePname." ban理由:".$this->reason);
 						$Re = $sender->getName() === $this->votePname ? "§cあなたはbanされる側です。" : isset($this->users[$sender->getName()]) ? "§b投票済みです。" : "§c投票してください。";//banされる側か、または投票済みか
 						$sender->sendMessage("§a[TF] ".$Re);
+						$sender->sendMessage("§a[TF] 投票数 §b".$this->true."§a対§c".$this->false);
 					}
 					return true;
 				case "fin":
