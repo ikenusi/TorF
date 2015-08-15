@@ -124,7 +124,7 @@ class TorF extends PluginBase implements Listener{
 		$this->getServer()->broadcastMessage("§c[TF] §b".$this->true."§a対§c".$this->false."§aです。");
 		if($this->true > $this->false){//賛成の方がおおかったら
 			$this->getServer()->broadcastMessage("§c[TF] §aよって、ban投票が§b可決§aされました！");
-			$this->getServer()->dispatchCommand(new ConsoleCommandSender, "ban ".$this->votePname);
+			$this->getServer()->dispatchCommand(new ConsoleCommandSender, "ban ".$this->votePname." 投票で理由は「".$this->reason."」");
 			$this->file($this->votePname. "のban理由は".$this->reason."でban可決");
 		}else{
 			$this->getServer()->broadcastMessage("§c[TF] §aよって、ban投票が§c否決§aされました！");
